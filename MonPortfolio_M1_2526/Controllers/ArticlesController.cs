@@ -4,15 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using MonPortfolio_M1_2526.Entities;
 using MonPortfolio_M1_2526.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 [Authorize]
 public class ArticlesController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ArticlesController(ApplicationDbContext context)
+    public ArticlesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     // GET: Articles
@@ -31,7 +34,7 @@ public class ArticlesController : Controller
             return NotFound();
         }
 
-        var articleentity = await _context.Articles
+        var articleentity = await _context.Articles.Include(a => a.Comments)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (articleentity == null)
         {
@@ -39,6 +42,35 @@ public class ArticlesController : Controller
         }
 
         return View(articleentity);
+    }
+
+    // POST: Articles/PostComment
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PostComment(System.Guid id, string text)
+    {
+        var articleentity = await _context.Articles.FindAsync(id);
+        if (articleentity == null)
+        {
+            return NotFound();
+        }
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        var commententity = new CommentEntity
+        {
+            Text = text,
+            Article = articleentity,
+            Author = await _userManager.GetUserAsync(User)
+        };
+
+        _context.Comments.Add(commententity);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     // GET: Articles/Create

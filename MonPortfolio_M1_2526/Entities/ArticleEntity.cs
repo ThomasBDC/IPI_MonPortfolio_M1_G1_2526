@@ -19,5 +19,7 @@ namespace MonPortfolio_M1_2526.Entities
         public string Content { get; set; } = string.Empty;
 
         public ApplicationUser? Author { get; set; }
+
+        public List<CommentEntity> Comments { get; set; } = default!;
     }
 }

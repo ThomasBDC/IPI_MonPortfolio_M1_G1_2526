@@ -10,6 +10,51 @@
     @Html.Raw(Model.Content)
 </div>
 
+<div class="comments-container">
+    <h3>Ajouter un commentaire</h3>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <form asp-action="PostComment" method="post" class="comment-form">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group mb-3">
+                <label for="text" class="form-label">Commentaire</label>
+                <textarea class="form-control" id="text" name="text"
+                          rows="4" placeholder="Votre commentaire..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Publier le commentaire</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">
+            <a asp-area="Identity" asp-page="/Account/Login">Connectez-vous</a> pour ajouter un commentaire.
+        </p>
+    }
+
+    <div class="comments-list mt-4">
+        @if (Model?.Comments?.Any() == true)
+        {
+            <h4>Commentaires (@Model.Comments.Count)</h4>
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="comment-item p-3 mb-2 border rounded">
+                    @if(comment.Author != null)
+                    {
+                        <strong>@comment.Author.FirstName @comment.Author.LastName</strong>
+                    }
+                    <p class="mt-2">@comment.Text</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">Aucun commentaire pour le moment.</p>
+        }
+    </div>
+</div>
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

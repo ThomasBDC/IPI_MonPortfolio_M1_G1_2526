@@ -10,5 +10,6 @@ namespace MonPortfolio_M1_2526.Data
     {
 
         public DbSet<ArticleEntity> Articles { get; set; }
+        public DbSet<CommentEntity> Comments { get; set; }
     }
 }
