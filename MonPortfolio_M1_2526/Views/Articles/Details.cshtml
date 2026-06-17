@@ -1,0 +1,19 @@
+@model MonPortfolio_M1_2526.Entities.ArticleEntity
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h1>@Model.Title</h1>
+
+<div class="article-container">
+    @Html.Raw(Model.Content)
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts{
+    <script>alert("coucou toi");</script>
+}
